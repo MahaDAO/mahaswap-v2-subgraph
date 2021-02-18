@@ -17,6 +17,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
+        - UniPair
         - Pair
         - Token
       abis:
@@ -61,3 +62,21 @@ templates:
           handler: handleTransfer
         - event: Sync(uint112,uint112)
           handler: handleSync
+  - kind: ethereum/contract
+    name: UniPair
+    network: mainnet
+    source:
+      abi: Pair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/core.ts
+      entities:
+        - UniPair
+      abis:
+        - name: Pair
+          file: ./abis/pair.json
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: handleUniSync
