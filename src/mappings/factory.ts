@@ -2,13 +2,16 @@
 import { Address, log } from '@graphprotocol/graph-ts'
 import { UniswapFactory, Pair, UniPair, Token, Bundle } from '../types/schema'
 import { PairCreated } from '../types/Factory/Factory'
-import { Pair as PairTemplate, UniPair as UniPairTemplate } from '../types/templates'
+
+ import { Pair as PairTemplate, UniPair as UniPairTemplate } from '../types/templates'
 import {
   FACTORY_ADDRESS,
   ZERO_BD,
   ZERO_BI,
   WETH,
   USDC,
+  DAI,
+  DAI_WETH_PAIR,
   USDC_WETH_PAIR,
   fetchTokenSymbol,
   fetchTokenName,
@@ -101,6 +104,12 @@ export function handleNewPair(event: PairCreated): void {
       Address.fromString(USDC),
       Address.fromString(WETH)
     )
+
+    registerUniPair(
+      Address.fromString(DAI_WETH_PAIR),
+      Address.fromString(DAI),
+      Address.fromString(WETH)
+    )
   }
 
   factory.pairCount = factory.pairCount + 1
@@ -141,3 +150,22 @@ export function handleNewPair(event: PairCreated): void {
   pair.save()
   factory.save()
 }
+
+
+
+// export function registerStuff(event: Transfer): void {
+//   let factory = Bundle.load('1')
+//   if (factory !== null) return
+
+//   // create new bundle
+//   let bundle = new Bundle('1')
+//   bundle.ethPrice = ZERO_BD
+//   bundle.save()
+
+//   // register all uniswap pairs
+//   registerUniPair(
+//     Address.fromString(USDC_WETH_PAIR),
+//     Address.fromString(USDC),
+//     Address.fromString(WETH)
+//   )
+// }

@@ -21,6 +21,8 @@ dataSources:
         - Pair
         - Token
       abis:
+        - name: Pair
+          file: ./abis/pair.json
         - name: Factory
           file: ./abis/factory.json
         - name: ERC20
@@ -52,10 +54,6 @@ templates:
         - name: Factory
           file: ./abis/factory.json
       eventHandlers:
-        - event: Mint(indexed address,uint256,uint256)
-          handler: handleMint
-        - event: Burn(indexed address,uint256,uint256,indexed address)
-          handler: handleBurn
         - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
           handler: handleSwap
         - event: Transfer(indexed address,indexed address,uint256)
@@ -74,9 +72,13 @@ templates:
       file: ./src/mappings/core.ts
       entities:
         - UniPair
+        - Pair
+        - Token
       abis:
         - name: Pair
           file: ./abis/pair.json
+        - name: Factory
+          file: ./abis/factory.json
       eventHandlers:
         - event: Sync(uint112,uint112)
           handler: handleUniSync
