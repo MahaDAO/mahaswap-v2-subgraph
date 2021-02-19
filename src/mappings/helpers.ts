@@ -8,10 +8,11 @@ import { Factory as FactoryContract } from '../types/templates/Pair/Factory'
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 export const FACTORY_ADDRESS = '0xe49f03dbc30a2b6f2e2c59a86f563e78dbfe8bc0'
-export const UNI_FACTORY_ADDRESS = '0xe49f03dbc30a2b6f2e2c59a86f563e78dbfe8bc0'
+export const UNI_FACTORY_ADDRESS = '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f'
 
 
 export const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+export const ARTH = '0x0e3cc2c4fb9252d17d07c67135e48536071735d9'
 export const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 export const DAI = '0x6b175474e89094c44da98b954eedeac495271d0f'
 export const USDC_WETH_PAIR = '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc' // created 10008355

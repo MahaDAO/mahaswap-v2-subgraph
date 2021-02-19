@@ -3,7 +3,7 @@ import { Address, log } from '@graphprotocol/graph-ts'
 import { UniswapFactory, Pair, UniPair, Token, Bundle } from '../types/schema'
 import { PairCreated } from '../types/Factory/Factory'
 
- import { Pair as PairTemplate, UniPair as UniPairTemplate } from '../types/templates'
+import { Pair as PairTemplate, UniPair as UniPairTemplate } from '../types/templates'
 import {
   FACTORY_ADDRESS,
   ZERO_BD,
@@ -150,22 +150,3 @@ export function handleNewPair(event: PairCreated): void {
   pair.save()
   factory.save()
 }
-
-
-
-// export function registerStuff(event: Transfer): void {
-//   let factory = Bundle.load('1')
-//   if (factory !== null) return
-
-//   // create new bundle
-//   let bundle = new Bundle('1')
-//   bundle.ethPrice = ZERO_BD
-//   bundle.save()
-
-//   // register all uniswap pairs
-//   registerUniPair(
-//     Address.fromString(USDC_WETH_PAIR),
-//     Address.fromString(USDC),
-//     Address.fromString(WETH)
-//   )
-// }

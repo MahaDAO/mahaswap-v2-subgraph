@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { Pair, UniPair, Token, Bundle } from '../types/schema'
-import { BigDecimal, Address, BigInt } from '@graphprotocol/graph-ts/index'
-import { ZERO_BD, DAI_WETH_PAIR, unifactoryContract, ADDRESS_ZERO, ONE_BD, DAI, WETH, USDC } from './helpers'
+import { BigDecimal, Address, BigInt, log } from '@graphprotocol/graph-ts/index'
+import { ZERO_BD, DAI_WETH_PAIR, unifactoryContract, ADDRESS_ZERO, ONE_BD, DAI, ARTH, WETH, USDC, factoryContract } from './helpers'
 
 
 export function getEthPriceInUSD(): BigDecimal {
@@ -20,6 +20,14 @@ let WHITELIST: string[] = [
   WETH, USDC, DAI
 ]
 
+let MAHASWAP_CURRENCIES: string[] = [
+  ARTH
+]
+
+let UNISWAP_BASES: string[] = [
+  WETH, USDC, DAI
+]
+
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
 let MINIMUM_USD_THRESHOLD_NEW_PAIRS = BigDecimal.fromString('400000')
 
@@ -35,9 +43,31 @@ export function findEthPerToken(token: Token): BigDecimal {
     return ONE_BD
   }
 
-  // loop through whitelist and check if paired with any
-  for (let i = 0; i < WHITELIST.length; ++i) {
-    let pairAddress = unifactoryContract.getPair(Address.fromString(token.id), Address.fromString(WHITELIST[i]))
+  // for mahaswap currencies (like ARTH) stick to the mahaswap pair
+  for (let i = 0; i < MAHASWAP_CURRENCIES.length; ++i) {
+    if (MAHASWAP_CURRENCIES[i] !== token.id) continue
+
+    let pairAddress = factoryContract.getPair(Address.fromString(token.id), Address.fromString(UNISWAP_BASES[i]))
+    if (pairAddress.toHexString() != ADDRESS_ZERO) {
+      let pair = Pair.load(pairAddress.toHexString())
+      if (pair !== null) {
+        if (pair.token0 == token.id && pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)) {
+          let token1 = Token.load(pair.token1)
+          return pair.token1Price.times(token1.derivedETH as BigDecimal) // return token1 per our token * Eth per token 1
+        }
+        if (pair.token1 == token.id && pair.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)) {
+          let token0 = Token.load(pair.token0)
+          return pair.token0Price.times(token0.derivedETH as BigDecimal) // return token0 per our token * ETH per token 0
+        }
+      }
+     log.info('pair exists but no pair' + pairAddress.toHexString(), [])
+    }
+  }
+
+
+  // for others, use the uniswap pairs
+  for (let i = 0; i < UNISWAP_BASES.length; ++i) {
+    let pairAddress = unifactoryContract.getPair(Address.fromString(token.id), Address.fromString(UNISWAP_BASES[i]))
     if (pairAddress.toHexString() != ADDRESS_ZERO) {
       let pair = UniPair.load(pairAddress.toHexString())
       if (pair !== null) {
@@ -50,8 +80,11 @@ export function findEthPerToken(token: Token): BigDecimal {
           return pair.token0Price.times(token0.derivedETH as BigDecimal) // return token0 per our token * ETH per token 0
         }
       }
+     log.info('pair exists but no unipair' + pairAddress.toHexString(), [])
     }
   }
+
+  log.info('no valid pair' + token.symbol, [])
 
   return ZERO_BD // nothing was found return 0
 }
